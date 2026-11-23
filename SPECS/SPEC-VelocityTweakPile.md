@@ -51,7 +51,7 @@ Forever offsets are a first guess - verify in game and tune.
 elsewhere and right-justified text grows leftwards, so the number sits off-centre and drifts per digit count.
 
 **Fix.** `Client.CenterLevelText(enabled)`: `SetJustifyH("CENTER")` + re-anchor CENTER on the ring centre.
-Era: stock `CENTER -> PlayerFrame BOTTOMLEFT (35.25, 30)` -> `(38.5, 29)` (tuned to EasyFrames' ring). Forever:
+Era: stock `CENTER -> PlayerFrame BOTTOMLEFT (35.25, 30)` -> `(36.5, 30.5)` (tuned to EasyFrames' ring). Forever:
 stock captured via `GetPoint`; `CENTER -> parent TOPRIGHT (-35, -36)` is a first guess - verify in game.
 Blizzard never re-anchors `PlayerLevelText` after load, so no hook needed. Plain FontString - combat-safe.
 
