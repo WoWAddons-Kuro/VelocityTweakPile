@@ -11,7 +11,7 @@ local ADDON, VTP = ...
 
 local STOCK = { "TOPLEFT", "PlayerFrame", "TOPLEFT", 19.5, -52 }
 -- Top-left of the portrait ring: mirror the stock offset vertically about the portrait centre.
-local TOPLEFT = { "TOPLEFT", "PlayerFrame", "TOPLEFT", 19.5, -12 }
+local TOPLEFT = { "TOPLEFT", "PlayerFrame", "TOPLEFT", 13.5, -6 }
 
 VTP.ClientFlavours.classic_era = {
 	MoveStateIconsToTopLeft = function(enabled)
