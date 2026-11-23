@@ -11,7 +11,7 @@ existing one. Each tweak is one idempotent `Apply(enabled)` with a checkbox; all
 ## Architecture
 
 ```
-Client\Client.lua            VTP.Client.INTERFACE = { "MoveStateIconsToTopLeft", "CenterLevelText" }
+Client\Client.lua            VTP.Client.INTERFACE = { "MoveStateIconsToTopLeft" }
 Client\Client_ClassicEra.lua re-anchors PlayerRestIcon (carries swords + glows)
 Client\Client_Forever.lua    re-anchors ...PlayerFrameContentContextual.AttackIcon + .PlayerRestLoop
 Client\Client_Select.lua     binds flavour onto VTP.Client, warns on missing/extra methods
@@ -45,16 +45,8 @@ so moving `PlayerRestIcon` alone (-> 19.5,-12) carries everything. **Forever** (
 Forever offsets are a first guess - verify in game and tune.
 
 **Not touched:** `PlayerAttackBackground` / `PlayerFrameFlash` (the red combat glow). Target frame has no state icons.
-## Tweak: `centerLevelText` (shipped)
-
-**Problem.** `PlayerLevelText` is `justifyH="RIGHT"` and anchored for the stock badge; EasyFrames' ring is drawn
-elsewhere and right-justified text grows leftwards, so the number sits off-centre and drifts per digit count.
-
-**Fix.** `Client.CenterLevelText(enabled)`: `SetJustifyH("CENTER")` + re-anchor CENTER on the ring centre.
-Era: stock `CENTER -> PlayerFrame BOTTOMLEFT (35.25, 30)` -> `(38.5, 29.75)` (tuned to EasyFrames' ring). Forever:
-stock captured via `GetPoint`; `CENTER -> parent TOPRIGHT (-35, -36)` is a first guess - verify in game.
-Blizzard never re-anchors `PlayerLevelText` after load, so no hook needed. Plain FontString - combat-safe.
-
 ## Ideas backlog (not scheduled)
 
-- none yet
+- Level number vs EasyFrames badge ring: the ring is baked into EasyFrames' border art (UI-TargetingFrame.blp),
+  not a region, so it cannot be moved. A "centre the level text" tweak was tried (2026-11-23) and removed: it
+  only looked wrong while resting and looked worse the rest of the time. Not worth reopening.

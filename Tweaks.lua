@@ -31,22 +31,3 @@ do
 		end,
 	})
 end
-
---------------------------------------------------------------------------------
--- centerLevelText: centre the level number in its badge
---------------------------------------------------------------------------------
--- Blizzard's PlayerLevelText is right-justified and anchored for the stock badge; with a skin
--- such as EasyFrames the ring is drawn elsewhere, and right-justified text grows leftwards as
--- digits are added, so the number sits off-centre and drifts per level. Centre justification
--- plus an anchor on the ring's centre keeps 1- and 2-digit levels in the middle.
--- Blizzard never re-anchors PlayerLevelText after load (only Show/Hide in art swaps), so a
--- one-shot SetPoint sticks. Plain FontString: combat-safe.
-do
-	VTP.RegisterTweak({
-		id = "centerLevelText",
-		label = "Centre the level number in its badge",
-		desc = "Blizzard right-aligns the level, so it sits off-centre in the ring and shifts as digits change. "
-			.. "This centres it on the badge.",
-		Apply = function(enabled) VTP.Client.CenterLevelText(enabled) end,
-	})
-end

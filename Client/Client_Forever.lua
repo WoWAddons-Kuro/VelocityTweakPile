@@ -31,30 +31,11 @@ local function Move(region, key, enabled)
 	end
 end
 
--- PlayerLevelText on Forever: stock TOPRIGHT (-24.5, -28) on its parent, justifyH RIGHT. The
--- Mainline art places the level in the frame's top-right badge, not under the portrait, so the
--- same fix applies there: centre-justify and anchor the centre on that badge. Stock captured via GetPoint.
-local levelStock
-local LEVEL_CENTER = { -35, -36 }   -- CENTER on parent TOPRIGHT; first guess, tune in game
-
 VTP.ClientFlavours.forever = {
 	MoveStateIconsToTopLeft = function(enabled)
 		local c = Contextual()
 		if not c then return end
 		Move(c.AttackIcon, "AttackIcon", enabled)
 		Move(c.PlayerRestLoop, "PlayerRestLoop", enabled)
-	end,
-	CenterLevelText = function(enabled)
-		local fs = PlayerLevelText
-		if not fs then return end
-		if not levelStock then
-			local pt, rel, relPt, x, y = fs:GetPoint(1)
-			if not pt then return end
-			levelStock = { pt, rel, relPt, x, y }
-		end
-		fs:SetJustifyH(enabled and "CENTER" or "RIGHT")
-		fs:ClearAllPoints()
-		if enabled then fs:SetPoint("CENTER", levelStock[2], "TOPRIGHT", LEVEL_CENTER[1], LEVEL_CENTER[2])
-		else fs:SetPoint(levelStock[1], levelStock[2], levelStock[3], levelStock[4], levelStock[5]) end
 	end,
 }
