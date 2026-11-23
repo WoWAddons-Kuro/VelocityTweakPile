@@ -1,0 +1,8 @@
+package-as: VelocityTweakPile
+
+ignore:
+  - README.md
+  - SPECS
+  - Assets/Screenshots
+  - .gitignore
+  - .pkgmeta

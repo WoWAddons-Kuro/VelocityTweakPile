@@ -1,0 +1,17 @@
+## Interface: 11509
+## Title: Velocity Tweak Pile
+## Notes: A pile of small, independent UI tweaks, each with its own on/off checkbox. First tweak: hide the player frame's combat swords icon so your level stays readable in combat.
+## Author: Kuro
+## Version: @project-version@
+## SavedVariables: VelocityTweakPileDB
+## IconTexture: Interface\AddOns\VelocityTweakPile\Assets\VelocityTweakPile.tga
+## X-Website: https://github.com/WoWAddons-Kuro/VelocityTweakPile
+## X-Category: Miscellaneous
+
+Client\Client.lua
+Client\Client_ClassicEra.lua
+Client\Client_Forever.lua
+Client\Client_Select.lua
+Core.lua
+Tweaks.lua
+Options.lua
