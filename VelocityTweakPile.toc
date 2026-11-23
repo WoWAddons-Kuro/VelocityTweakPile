@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Title: Velocity Tweak Pile
-## Notes: A pile of small, independent UI tweaks, each with its own on/off checkbox. First tweak: hide the player frame's combat swords icon so your level stays readable in combat.
+## Notes: A pile of small, independent UI tweaks, each with its own on/off checkbox. First tweak: move the rest/combat icons off your level badge so it stays readable.
 ## Author: Kuro
 ## Version: @project-version@
 ## SavedVariables: VelocityTweakPileDB

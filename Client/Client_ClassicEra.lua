@@ -1,16 +1,24 @@
 -- Velocity Tweak Pile: Classic Era client (Blizzard_UnitFrame\Classic\PlayerFrame.xml).
 --
--- The swords icon is two named global textures anchored to PlayerRestIcon at the bottom-left
--- of the portrait: PlayerAttackIcon (the swords) and PlayerAttackGlow (ADD-blend halo).
--- PlayerFrame_UpdateStatus() Show()/Hide()s them, so we fade them with alpha rather than
--- hiding - Blizzard's Show() would otherwise bring them straight back.
+-- Stock anchors (all in PlayerFrame coordinates, portrait is 64x64 at TOPLEFT 24,-16):
+--   PlayerRestIcon    TOPLEFT PlayerFrame 19.5,-52     (Zzz)  <- the bottom-left of the portrait,
+--                                                          where PlayerLevelText also sits
+--   PlayerAttackIcon  TOPLEFT PlayerRestIcon 1,0       (swords)
+--   PlayerStatusGlow  TOPLEFT PlayerRestIcon 0,0       (frame holding PlayerRestGlow / PlayerAttackGlow)
+-- So moving PlayerRestIcon alone carries the swords and both glows with it. Blizzard only
+-- Show()/Hide()s these; it never re-anchors them after load, so a one-time SetPoint sticks.
 local ADDON, VTP = ...
 
+local STOCK = { "TOPLEFT", "PlayerFrame", "TOPLEFT", 19.5, -52 }
+-- Top-left of the portrait ring: mirror the stock offset vertically about the portrait centre.
+local TOPLEFT = { "TOPLEFT", "PlayerFrame", "TOPLEFT", 19.5, -12 }
+
 VTP.ClientFlavours.classic_era = {
-	PlayerCombatIconRegions = function()
-		local out = {}
-		if PlayerAttackIcon then out[#out + 1] = PlayerAttackIcon end
-		if PlayerAttackGlow then out[#out + 1] = PlayerAttackGlow end
-		return out
+	MoveStateIconsToTopLeft = function(enabled)
+		local icon = PlayerRestIcon
+		if not icon then return end
+		local p = enabled and TOPLEFT or STOCK
+		icon:ClearAllPoints()
+		icon:SetPoint(p[1], _G[p[2]], p[3], p[4], p[5])
 	end,
 }

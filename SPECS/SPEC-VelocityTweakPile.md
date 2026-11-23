@@ -11,9 +11,9 @@ existing one. Each tweak is one idempotent `Apply(enabled)` with a checkbox; all
 ## Architecture
 
 ```
-Client\Client.lua            VTP.Client.INTERFACE = { "PlayerCombatIconRegions" }
-Client\Client_ClassicEra.lua PlayerAttackIcon, PlayerAttackGlow (named globals)
-Client\Client_Forever.lua    PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.AttackIcon
+Client\Client.lua            VTP.Client.INTERFACE = { "MoveStateIconsToTopLeft" }
+Client\Client_ClassicEra.lua re-anchors PlayerRestIcon (carries swords + glows)
+Client\Client_Forever.lua    re-anchors ...PlayerFrameContentContextual.AttackIcon + .PlayerRestLoop
 Client\Client_Select.lua     binds flavour onto VTP.Client, warns on missing/extra methods
 Core.lua                     DB init (ADDON_LOADED), VTP.RegisterTweak, IsEnabled/SetEnabled, ApplyAll at PLAYER_LOGIN
 Tweaks.lua                   one `do ... VTP.RegisterTweak({...}) end` block per tweak
@@ -27,23 +27,24 @@ Options.lua                  one checkbox + description per registered tweak, Re
 - Never call Show/Hide/SetPoint on a secure frame; prefer alpha / hooks on plain regions.
 - No Blizzard region paths outside `Client_*.lua`.
 
-## Tweak: `hideCombatIcon` (shipped)
+## Tweak: `moveStateIcons` (shipped)
 
-**Problem.** Blizzard anchors `PlayerAttackIcon` (+ `PlayerAttackGlow` on Era) to `PlayerRestIcon` at the
-portrait's bottom-left, which is also where `PlayerLevelText` lives. EasyFrames' larger portrait ring puts the
-swords squarely over the level number (EasyFrames' own `Core:MoveLevelText()` is commented out upstream).
+**Problem.** Blizzard anchors the rest icon (Zzz) and the combat icon (swords) over the portrait's bottom-left,
+which is also where `PlayerLevelText` lives. EasyFrames' larger portrait ring puts them squarely over the level
+number (EasyFrames' own `Core:MoveLevelText()` is commented out upstream).
 
-**Fix.** `SetAlpha(0)` on the regions returned by `Client.PlayerCombatIconRegions()`; `SetAlpha(1)` when
-disabled. `PlayerFrame_UpdateStatus()` uses Show/Hide (not alpha) so a one-shot alpha sticks; it is additionally
-`hooksecurefunc`'d to re-assert alpha defensively. Textures only - safe in combat lockdown.
+**Fix.** `Client.MoveStateIconsToTopLeft(enabled)` re-anchors the icons to the portrait's top-left corner;
+`enabled == false` restores the stock anchors. Blizzard only Show/Hides these after load, so a one-shot SetPoint
+sticks; `PlayerFrame_UpdateStatus` is `hooksecurefunc`'d to re-assert defensively. Regions only - combat-safe.
 
-**Era regions** (`Blizzard_UnitFrame\Classic\PlayerFrame.xml`): `PlayerAttackIcon` (UI-StateIcon, right half) and
-`PlayerAttackGlow` (ADD blend). **Forever** (`Mainline\PlayerFrame.xml`): single atlas texture
-`UI-HUD-UnitFrame-Player-CombatIcon` at `...PlayerFrameContentContextual.AttackIcon`; no glow.
+**Era** (`Blizzard_UnitFrame\Classic\PlayerFrame.xml`): `PlayerAttackIcon`, `PlayerStatusGlow` (holding
+`PlayerRestGlow`/`PlayerAttackGlow`) are all anchored to `PlayerRestIcon` (stock TOPLEFT 19.5,-52 on PlayerFrame),
+so moving `PlayerRestIcon` alone (-> 19.5,-12) carries everything. **Forever** (`Mainline\PlayerFrame.xml`):
+`PlayerFrameContentContextual.AttackIcon` (atlas, stock 64,-62 -> 64,-12) and `.PlayerRestLoop` (flipbook frame,
+-> 60,-8) are independent and each re-anchored; stock anchors captured via `GetPoint` on first use.
+Forever offsets are a first guess - verify in game and tune.
 
-**Not touched:** `PlayerAttackBackground` / `PlayerFrameFlash` (the red combat glow) - that remains the combat cue.
-Target frame has no combat icon; enemy level is unaffected.
-
+**Not touched:** `PlayerAttackBackground` / `PlayerFrameFlash` (the red combat glow). Target frame has no state icons.
 ## Ideas backlog (not scheduled)
 
 - none yet

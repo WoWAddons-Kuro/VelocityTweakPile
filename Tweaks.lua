@@ -4,38 +4,30 @@ local ADDON, VTP = ...
 local Client = VTP.Client
 
 --------------------------------------------------------------------------------
--- hideCombatIcon: keep the player level readable in combat
+-- moveStateIcons: keep the player level readable - move Zzz / swords to the top-left
 --------------------------------------------------------------------------------
--- Blizzard anchors the crossed-swords "in combat" icon over the bottom-left of the player
--- portrait, which is exactly where the level badge sits. Stock art half-covers the number;
--- unit-frame skins such as EasyFrames cover it completely. On a hardcore character the level
--- must stay readable at all times, so this tweak fades the swords to invisible.
---
--- Why alpha and not Hide(): PlayerFrame_UpdateStatus() calls Show()/Hide() on the icon every
--- time combat/rest state changes, which would immediately undo a Hide(). Alpha is not touched
--- by Blizzard's code for these textures, so a one-time SetAlpha(0) sticks. The textures are
--- plain regions, not secure frames, so this is safe in combat lockdown.
--- Hooking PlayerFrame_UpdateStatus covers any future client build that resets alpha there.
+-- Blizzard anchors the rest (Zzz) and in-combat (crossed swords) icons over the bottom-left of
+-- the player portrait, which is exactly where the level badge sits. Stock art half-covers the
+-- number; unit-frame skins such as EasyFrames cover it completely. On a hardcore character the
+-- level must stay readable at all times, so this tweak re-anchors both icons to the portrait's
+-- top-left corner instead. Blizzard only Show()/Hide()s these regions and never re-anchors them
+-- after load, so a one-time SetPoint sticks; they are plain regions, not secure frames, so this
+-- is safe in combat lockdown. PlayerFrame_UpdateStatus is hooked defensively anyway.
 do
 	local hooked = false
-	local function ApplyAlpha()
-		local alpha = VTP.IsEnabled("hideCombatIcon") and 0 or 1
-		for _, region in ipairs(Client.PlayerCombatIconRegions()) do
-			region:SetAlpha(alpha)
-		end
-	end
+	local function Reapply() Client.MoveStateIconsToTopLeft(VTP.IsEnabled("moveStateIcons")) end
 
 	VTP.RegisterTweak({
-		id = "hideCombatIcon",
-		label = "Hide the player frame's combat swords icon",
-		desc = "The crossed swords that appear on your portrait in combat sit right on top of your level. "
-			.. "Hiding them keeps your level readable at all times (the red combat glow still shows).",
+		id = "moveStateIcons",
+		label = "Move the rest (Zzz) and combat (swords) icons to the top-left of the portrait",
+		desc = "Blizzard draws them over the bottom-left of your portrait, right on top of your level. "
+			.. "Moving them to the top-left corner keeps your level readable at all times.",
 		Apply = function(enabled)
 			if not hooked and type(PlayerFrame_UpdateStatus) == "function" then
-				hooksecurefunc("PlayerFrame_UpdateStatus", ApplyAlpha)
+				hooksecurefunc("PlayerFrame_UpdateStatus", Reapply)
 				hooked = true
 			end
-			ApplyAlpha()
+			Client.MoveStateIconsToTopLeft(enabled)
 		end,
 	})
 end

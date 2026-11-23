@@ -10,8 +10,9 @@ VTP.ClientFlavours = {}
 
 -- Every flavour implements all of these (checked at load by Client_Select.lua).
 VTP.Client.INTERFACE = {
-	-- PlayerCombatIconRegions() -> array of Texture regions that together draw the player
-	-- frame's "in combat" swords icon. Textures only (no secure frames): SetAlpha on them is
-	-- combat-safe. May return an empty table when the regions do not exist on this client.
-	"PlayerCombatIconRegions",
+	-- MoveStateIconsToTopLeft(enabled) -> idempotent. enabled == true re-anchors the player
+	-- frame's rest (Zzz) and combat (swords) state icons from the bottom-left of the portrait
+	-- (where the level badge lives) to the portrait's top-left corner. enabled == false restores
+	-- Blizzard's original anchors. Regions only, no secure frames: combat-safe.
+	"MoveStateIconsToTopLeft",
 }
