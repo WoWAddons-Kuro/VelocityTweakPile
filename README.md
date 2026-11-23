@@ -17,6 +17,11 @@ tweak moves both icons to the portrait's top-left corner, where nothing else liv
 Works whether or not EasyFrames (or any other unit-frame skin that keeps Blizzard's frames) is loaded:
 it only touches Blizzard's own textures, and never a secure frame, so it is combat-safe.
 
+### Centre the level number in its badge
+
+Blizzard right-aligns the level, so with a skin it sits off-centre in the ring and shifts as digits
+change. This centres it on the badge.
+
 ## Options
 
 `/vtp` opens the page (Options > AddOns > Velocity Tweak Pile). `/vtp status` lists the tweaks and

@@ -15,4 +15,9 @@ VTP.Client.INTERFACE = {
 	-- (where the level badge lives) to the portrait's top-left corner. enabled == false restores
 	-- Blizzard's original anchors. Regions only, no secure frames: combat-safe.
 	"MoveStateIconsToTopLeft",
+	-- CenterLevelText(enabled) -> idempotent. enabled == true centre-justifies the player frame's
+	-- level FontString and anchors its centre on the centre of the level badge ring, so one- and
+	-- two-digit levels both sit in the middle. enabled == false restores Blizzard's anchor and
+	-- right justification.
+	"CenterLevelText",
 }
