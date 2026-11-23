@@ -17,7 +17,7 @@ local TOPLEFT = { "TOPLEFT", "PlayerFrame", "TOPLEFT", 13.5, -6 }
 -- Blizzard never re-anchors it. Right-justified text grows leftwards as digits are added, so it
 -- looks off-centre in the badge ring; centre justification + an anchor on the ring's centre fixes that.
 local LEVEL_STOCK  = { "CENTER", "PlayerFrame", "BOTTOMLEFT", 35.25, 30 }
-local LEVEL_CENTER = { "CENTER", "PlayerFrame", "BOTTOMLEFT", 37.5, 29.75 }
+local LEVEL_CENTER = { "CENTER", "PlayerFrame", "BOTTOMLEFT", 38.5, 29.75 }
 
 VTP.ClientFlavours.classic_era = {
 	MoveStateIconsToTopLeft = function(enabled)
