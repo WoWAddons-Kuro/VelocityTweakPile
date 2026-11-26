@@ -11,9 +11,9 @@ existing one. Each tweak is one idempotent `Apply(enabled)` with a checkbox; all
 ## Architecture
 
 ```
-Client\Client.lua            VTP.Client.INTERFACE = { "MoveStateIconsToTopLeft" }
-Client\Client_ClassicEra.lua re-anchors PlayerRestIcon (carries swords + glows)
-Client\Client_Forever.lua    re-anchors ...PlayerFrameContentContextual.AttackIcon + .PlayerRestLoop
+Client\Client.lua            VTP.Client.INTERFACE = { "MoveStateIconsToTopLeft", "FixCompareAttackPowerDelta" }
+Client\Client_ClassicEra.lua re-anchors PlayerRestIcon (carries swords + glows); rewrites the compare AP delta line
+Client\Client_Forever.lua    re-anchors ...PlayerFrameContentContextual.AttackIcon + .PlayerRestLoop; AP fix is a no-op
 Client\Client_Select.lua     binds flavour onto VTP.Client, warns on missing/extra methods
 Core.lua                     DB init (ADDON_LOADED), VTP.RegisterTweak, IsEnabled/SetEnabled, ApplyAll at PLAYER_LOGIN
 Tweaks.lua                   one `do ... VTP.RegisterTweak({...}) end` block per tweak
@@ -45,6 +45,34 @@ so moving `PlayerRestIcon` alone (-> 19.5,-12) carries everything. **Forever** (
 Forever offsets are a first guess - verify in game and tune.
 
 **Not touched:** `PlayerAttackBackground` / `PlayerFrameFlash` (the red combat glow). Target frame has no state icons.
+
+## Tweak: `fixCompareAttackPower` (shipped 2026-11-26)
+
+**Problem.** On Classic Era `GetItemStats(link)` reports Attack Power in **item-budget units** - the item stat
+budget values 1 point = 1 Str = 1 Agi = 2 AP, and the API hands back the budget point (a `+2 Attack Power`
+dagger -> `ITEM_MOD_ATTACK_POWER_SHORT = 1`; owner research 2026-11-26). Blizzard's own compare block
+("If you replace this item, the following stat changes will occur:") is built from that number by
+`C_TooltipComparison.GetItemComparisonDelta`, so replacing that dagger with a no-AP staff prints
+`-1 Attack Power`. Forever's `C_Item.GetItemStats` reports displayed AP and its compare block is correct.
+
+**Where the lines come from.** `Blizzard_SharedXMLGame\Tooltip\TooltipComparisonManager.lua :SetItemTooltip()`
+builds each `ShoppingTooltipN` as: `ClearLines`, header, `ProcessInfo(worn item's own tooltip data)`, then appends
+the **pre-formatted strings** the delta API returns via `GameTooltip_AddHighlightLine`. A `TooltipDataProcessor`
+post-call fires after `ProcessInfo` and never sees the delta lines; the hook is `hooksecurefunc` on
+`TooltipComparisonManager.SetItemTooltip`, which runs with the block complete.
+
+**Fix (the invariant that matters).** The corrected delta is **read from displayed text, never from the API and
+never from Blizzard's delta line**: hovered AP is summed from `+N Attack Power` lines in the owning `GameTooltip`,
+worn AP from the same lines in the shopping tooltip above the `ITEM_DELTA_DESCRIPTION` header. Then the first
+line under the header matching `^[+-]N Attack Power$` is rewritten to `hovered - worn` (green/red by sign, cleared
+when 0) - **only if it differs** from what Blizzard drew. Displayed text is the truth today and after any client
+fix, so when Blizzard corrects the API this tweak becomes a no-op instead of doubling a fixed value. Other lines in
+the block are not touched. Hook is installed once; disabling flips a flag the hook checks.
+
+**Known limits.** Only Attack Power is corrected (the one budget-unit stat confirmed). Items whose AP comes from a
+`Equip: Increases attack power by N.` line are also read; AP from set bonuses or procs is not. Secondary shopping
+tooltip (`IF_EQUIPPED_TOGETHER`) is handled by the same hook when it carries its own delta block.
+
 ## Ideas backlog (not scheduled)
 
 - Level number vs EasyFrames badge ring: the ring is baked into EasyFrames' border art (UI-TargetingFrame.blp),

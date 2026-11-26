@@ -38,4 +38,8 @@ VTP.ClientFlavours.forever = {
 		Move(c.AttackIcon, "AttackIcon", enabled)
 		Move(c.PlayerRestLoop, "PlayerRestLoop", enabled)
 	end,
+
+	-- Forever's C_Item.GetItemStats reports displayed Attack Power, so its compare
+	-- delta is already right. Nothing to fix here.
+	FixCompareAttackPowerDelta = function(enabled) end,
 }

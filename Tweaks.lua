@@ -31,3 +31,24 @@ do
 		end,
 	})
 end
+
+--------------------------------------------------------------------------------
+-- fixCompareAttackPower: Classic Era's compare tooltip gets the Attack Power delta wrong
+--------------------------------------------------------------------------------
+-- On Classic Era GetItemStats reports Attack Power in item-budget units (1 point = 2 AP),
+-- and Blizzard's own "If you replace this item, the following stat changes will occur:"
+-- block uses that number, so replacing a +2 AP dagger prints "-1 Attack Power". The fix
+-- recomputes that one line from the two items' displayed "+N Attack Power" lines - never
+-- from the API and never from Blizzard's line - so a later client fix makes this a no-op
+-- instead of a double. No-op on Forever, whose comparison is already right.
+do
+	VTP.RegisterTweak({
+		id = "fixCompareAttackPower",
+		label = "Fix the Attack Power line in the \"If you replace this item\" compare block (Classic Era)",
+		desc = "Classic Era's item API reports Attack Power at half its displayed value, so the compare "
+			.. "tooltip under-counts it. Recomputes that one line from what the items actually say.",
+		Apply = function(enabled)
+			Client.FixCompareAttackPowerDelta(enabled)
+		end,
+	})
+end

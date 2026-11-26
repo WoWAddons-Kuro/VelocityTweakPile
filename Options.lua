@@ -22,7 +22,11 @@ local function CreateOptions()
 	local last = sub
 	for i, def in ipairs(VTP.tweaks) do
 		local cb = CreateFrame("CheckButton", "VelocityTweakPileCheck" .. i, optionsFrame, "InterfaceOptionsCheckButtonTemplate")
-		cb:SetPoint("TOPLEFT", last, "BOTTOMLEFT", i == 1 and -2 or 0, i == 1 and -18 or -10)
+		-- Vertical from the previous element, horizontal from the page's left edge: anchoring
+		-- TOPLEFT to the description's BOTTOMLEFT inherited the description's 28px inset, so
+		-- every checkbox after the first stepped further right.
+		cb:SetPoint("TOP", last, "BOTTOM", 0, i == 1 and -18 or -10)
+		cb:SetPoint("LEFT", optionsFrame, "LEFT", 14, 0)
 		local text = cb.Text or _G[cb:GetName() .. "Text"]
 		text:SetText(def.label); text:SetFontObject("GameFontHighlight")
 		cb:SetScript("OnClick", function(self) VTP.SetEnabled(def.id, self:GetChecked() and true or false) end)
@@ -80,8 +84,10 @@ SlashCmdList.VELOCITYTWEAKPILE = function(msg)
 		end
 	elseif msg == "reset" then
 		VTP.ResetToDefaults(); VTP.Print("all tweaks reset to defaults (enabled)")
+	elseif msg == "apdebug" then
+		if VTP.APDebug then VTP.APDebug() else VTP.Print("apdebug: not available on this client") end
 	else
-		VTP.Print("/vtp  |  /vtp status  |  /vtp reset")
+		VTP.Print("/vtp  |  /vtp status  |  /vtp reset  |  /vtp apdebug")
 	end
 end
 

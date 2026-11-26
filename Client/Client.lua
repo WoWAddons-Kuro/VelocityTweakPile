@@ -15,4 +15,15 @@ VTP.Client.INTERFACE = {
 	-- (where the level badge lives) to the portrait's top-left corner. enabled == false restores
 	-- Blizzard's original anchors. Regions only, no secure frames: combat-safe.
 	"MoveStateIconsToTopLeft",
+
+	-- FixCompareAttackPowerDelta(enabled) -> idempotent. Classic Era's compare tooltip
+	-- ("If you replace this item, the following stat changes will occur:") computes the
+	-- Attack Power delta from GetItemStats, which on Era reports AP in ITEM-BUDGET units
+	-- (1 budget point = 2 displayed AP), so "+2 Attack Power" vs none prints "-1 Attack
+	-- Power". enabled == true recomputes that one line from the two items' OWN displayed
+	-- "+N Attack Power" tooltip lines and rewrites it when it differs; nothing else in the
+	-- block is touched, and a line Blizzard already has right is left alone (so a client
+	-- fix later makes this a no-op rather than a double). enabled == false stops rewriting.
+	-- Forever's comparison is correct: that flavour is a no-op.
+	"FixCompareAttackPowerDelta",
 }
